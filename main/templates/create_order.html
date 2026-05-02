@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Нова заявка | AppLogistics{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div class="max-w-4xl mx-auto pb-12">
+    <div class="mb-8">
+        <h1 class="text-3xl font-black text-gray-100 tracking-tight">Створення нової заявки</h1>
+        <p class="text-sm text-gray-400">Заповніть інформацію про клієнта та локацію</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-[#252525] border border-gray-800 rounded-3xl p-8 shadow-xl space-y-5">
+                <h2 class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-2">Контактна інформація</h2>
+                
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">ПІБ Клієнта</label>
+                    <input type="text" name="client_name" placeholder="Чегур Артур" required 
+                           class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Телефон</label>
+                    <input type="text" name="phone" placeholder="+380..." required 
+                           class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Канал зв'язку</label>
+                    <select name="communication" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                        <option value="phone">Дзвінок</option>
+                        <option value="tg">Telegram</option>
+                        <option value="viber">Viber</option>
+                        <option value="whatsapp">WhatsApp</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Додаткові соцмережі</label>
+                    <div id="social-container" class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text" name="socials" placeholder="@username або посилання" 
+                                   class="flex-grow bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                            <button type="button" onclick="addSocialField()" class="bg-blue-600/10 text-blue-500 px-4 rounded-xl border border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#252525] border border-gray-800 rounded-3xl p-8 shadow-xl space-y-5">
+                <h2 class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-2">Деталі вантажу та файли</h2>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Область</label>
+                        <input type="text" name="region" placeholder="Київська" 
+                               class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Місто</label>
+                        <input type="text" name="city" placeholder="Київ" 
+                               class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Адреса</label>
+                    <input type="text" name="address" placeholder="вул. Центральна, 10" 
+                           class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1 italic text-blue-400">Галерея фото (можна декілька)</label>
+                    <input type="file" name="photos" multiple accept="image/*"
+                           class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600/10 file:text-blue-500 hover:file:bg-blue-600/20 transition-all bg-[#1a1a1a] border border-gray-800 rounded-xl p-2">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1 italic text-gray-400">Документи (можна декілька)</label>
+                    <input type="file" name="documents" multiple
+                           class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-gray-800 file:text-gray-300 hover:file:bg-gray-700 transition-all bg-[#1a1a1a] border border-gray-800 rounded-xl p-2">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#252525] border border-gray-800 rounded-3xl p-8 shadow-xl">
+            <h2 class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-4">Позначте точку на карті</h2>
+            <div id="map" class="w-full h-80 rounded-2xl border border-gray-800 z-0"></div>
+            <input type="hidden" id="lat_input" name="latitude">
+            <input type="hidden" id="lng_input" name="longitude">
+            <p id="coords-display" class="text-[10px] text-gray-600 mt-2 italic text-center uppercase tracking-tighter">Координати не вибрано</p>
+        </div>
+
+        <div class="pt-4">
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98] uppercase tracking-widest">
+                Підтвердити та створити заявку
+            </button>
+        </div>
+    </form>
+
+    <div class="mt-8 flex justify-center">
+        <a href="{% url 'index' %}" class="text-gray-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+            <span>←</span> Назад до списку
+        </a>
+    </div>
+</div>
+
+<script>
+    // 1. Карта
+    var map = L.map('map').setView([48.3794, 31.1656], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    var marker;
+
+    map.on('click', function(e) {
+        if (marker) marker.setLatLng(e.latlng);
+        else marker = L.marker(e.latlng).addTo(map);
+
+        document.getElementById('lat_input').value = e.latlng.lat;
+        document.getElementById('lng_input').value = e.latlng.lng;
+        document.getElementById('coords-display').innerText = "Фіксація: " + e.latlng.lat.toFixed(6) + ", " + e.latlng.lng.toFixed(6);
+    });
+
+    // 2. Соцмережі
+    function addSocialField() {
+        const container = document.getElementById('social-container');
+        const div = document.createElement('div');
+        div.className = 'flex gap-2 animate-in fade-in duration-300';
+        div.innerHTML = `
+            <input type="text" name="socials" placeholder="Ще один аккаунт" class="flex-grow bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+            <button type="button" onclick="this.parentElement.remove()" class="bg-red-900/10 text-red-500 px-4 rounded-xl border border-red-900/20 hover:bg-red-600 hover:text-white transition-all">—</button>
+        `;
+        container.appendChild(div);
+    }
+</script>
+{% endblock %}

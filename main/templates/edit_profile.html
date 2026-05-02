@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div class="max-w-3xl mx-auto py-10 px-4">
+    <div class="mb-8 text-center">
+        <h1 class="text-3xl font-black text-white tracking-tight uppercase">Редагувати профіль</h1>
+        <p class="text-gray-500 text-sm mt-2">Оновіть ваші контактні дані та місце розташування</p>
+    </div>
+
+    <form method="POST" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="bg-[#252525] border border-gray-800 rounded-3xl p-8 shadow-2xl space-y-5">
+            <h2 class="text-xs font-black text-blue-500 uppercase tracking-widest border-b border-gray-800 pb-4 mb-4">Особиста інформація</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">ПІБ / Назва</label>
+                    <input type="text" name="full_name" value="{{ user.order.full_name }}" placeholder="Чегур Артур" 
+                           class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Телефон</label>
+                    <input type="text" name="phone" value="{{ user.order.phone }}" placeholder="+380..." 
+                           class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Основний канал зв'язку</label>
+                <select name="communication" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                    <option value="phone" {% if user.order.communication_channel == 'phone' %}selected{% endif %}>Дзвінок</option>
+                    <option value="tg" {% if user.order.communication_channel == 'tg' %}selected{% endif %}>Telegram</option>
+                    <option value="viber" {% if user.order.communication_channel == 'viber' %}selected{% endif %}>Viber</option>
+                    <option value="whatsapp" {% if user.order.communication_channel == 'whatsapp' %}selected{% endif %}>WhatsApp</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 ml-1">Додаткові соцмережі</label>
+                <div id="social-container" class="space-y-3">
+                    <div class="flex gap-2">
+                        <input type="text" name="socials" placeholder="@username або посилання" 
+                               class="flex-grow bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+                        <button type="button" onclick="addSocialField()" class="bg-blue-600/10 text-blue-500 px-4 rounded-xl border border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#252525] border border-gray-800 rounded-3xl p-8 shadow-2xl space-y-4">
+            <h2 class="text-xs font-black text-blue-500 uppercase tracking-widest border-b border-gray-800 pb-4 mb-4">Локація на карті</h2>
+            
+            <input type="hidden" id="lat_input" name="latitude" value="{{ user.order.latitude }}">
+            <input type="hidden" id="lng_input" name="longitude" value="{{ user.order.longitude }}">
+
+            <div id="map" class="w-full h-80 rounded-2xl border border-gray-800 z-0"></div>
+            <p id="coords-text" class="text-[10px] text-gray-600 italic text-center uppercase tracking-widest">
+                {% if user.order.latitude %}
+                    Фіксація: {{ user.order.latitude|stringformat:".5f" }}, {{ user.order.longitude|stringformat:".5f" }}
+                {% else %}
+                    Клікніть по карті, щоб встановити маркер
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="flex gap-4">
+            <a href="{% url 'index' %}" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-400 font-bold py-4 rounded-2xl text-center transition-all uppercase text-xs tracking-widest">
+                Скасувати
+            </a>
+            <button type="submit" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98] uppercase text-xs tracking-widest">
+                Зберегти зміни
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // 1. Ініціалізація карти
+    var startLat = parseFloat("{{ user.order.latitude|default:48.3794 }}".replace(',', '.'));
+    var startLng = parseFloat("{{ user.order.longitude|default:31.1656 }}".replace(',', '.'));
+
+    var map = L.map('map').setView([startLat, startLng], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    var marker;
+    
+    // Якщо координати вже є, ставимо маркер відразу
+    if ("{{ user.order.latitude }}") {
+        marker = L.marker([startLat, startLng]).addTo(map);
+    }
+
+    map.on('click', function(e) {
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng).addTo(map);
+        }
+
+        document.getElementById('lat_input').value = lat;
+        document.getElementById('lng_input').value = lng;
+        document.getElementById('coords-text').innerText = "Нова фіксація: " + lat.toFixed(5) + ", " + lng.toFixed(5);
+    });
+
+    // 2. Функція для додавання соцмереж
+    function addSocialField() {
+        const container = document.getElementById('social-container');
+        const div = document.createElement('div');
+        div.className = 'flex gap-2 animate-in fade-in duration-300';
+        div.innerHTML = `
+            <input type="text" name="socials" placeholder="Ще один аккаунт" class="flex-grow bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-gray-200 focus:border-blue-500 outline-none transition-all">
+            <button type="button" onclick="this.parentElement.remove()" class="bg-red-900/10 text-red-500 px-4 rounded-xl border border-red-900/20 hover:bg-red-600 hover:text-white transition-all">—</button>
+        `;
+        container.appendChild(div);
+    }
+</script>
+
+<style>
+    /* Темний фільтр для карти, щоб пасувала до дизайну */
+    .leaflet-tile { filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3); }
+    .leaflet-container { background: #1a1a1a; border: none; }
+</style>
+{% endblock %}

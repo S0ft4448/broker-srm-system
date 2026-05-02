@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex justify-between items-end mb-8 border-b border-gray-800 pb-6">
+    <div>
+        <h1 class="text-3xl font-extrabold text-gray-100 tracking-tight">Заявки</h1>
+        <p class="text-sm text-gray-500 mt-1">Керування поточними замовленнями</p>
+    </div>
+    <a href="{% url 'create_order' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95 flex items-center gap-2">
+        <span>+ Нова заявка</span>
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <div class="bg-[#252525] border border-gray-800 rounded-3xl p-6 min-h-[600px] flex flex-col shadow-2xl">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></div>
+                <h3 class="text-gray-200 font-bold text-sm uppercase tracking-widest">Нові заявки</h3>
+            </div>
+            <span class="bg-[#1a1a1a] text-blue-400 text-xs font-bold px-3 py-1 rounded-full border border-gray-800">{{ new_orders.count }} </span>
+        </div>
+        
+        <div class="flex-grow flex flex-col gap-4 p-4 w-full">
+    {% for order in new_orders %}
+        <div class="w-full bg-[#2a2a2a] border border-gray-800 rounded-2xl p-6 shadow-xl hover:border-blue-500 transition-all duration-300">
+            
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded-md font-black">ID: {{ order.id }}</span>
+                    <span class="text-gray-500 text-xs font-medium">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+                <div class="px-3 py-1 bg-blue-900/20 border border-blue-800/50 rounded-full">
+                    <span class="text-blue-400 text-[10px] font-bold uppercase tracking-widest">Нова</span>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-xl font-extrabold text-white tracking-tight">{{ order.full_name }}</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="flex items-center gap-3 text-gray-400 bg-[#1e1e1e] p-3 rounded-xl border border-gray-800">
+                        <span class="text-lg">📞</span>
+                        <span class="text-sm font-semibold">{{ order.phone }}</span>
+                    </div>
+                    {% if order.city %}
+                    <div class="flex items-center gap-3 text-gray-400 bg-[#1e1e1e] p-3 rounded-xl border border-gray-800">
+                        <span class="text-lg">📍</span>
+                        <span class="text-sm font-semibold">{{ order.city }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-gray-800/50 flex justify-between items-center">
+                <p class="text-xs text-gray-500">Зв'язок: <span class="text-gray-300 font-bold">{{ order.get_communication_channel_display }}</span></p>
+                <a href ="{% url 'order_view' order.id %}" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-4 py-2 rounded-lg transition-colors font-bold">
+                    Переглянути деталі
+                </a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="flex flex-col items-center justify-center py-20 opacity-20">
+            <p class="text-gray-400 italic">Тут поки що порожньо...</p>
+        </div>
+    {% endfor %}
+</div>
+    </div>
+
+    <div class="bg-[#252525] border border-gray-800 rounded-3xl p-6 min-h-[600px] flex flex-col shadow-2xl">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_10px_#eab308]"></div>
+                <h3 class="text-gray-200 font-bold text-sm uppercase tracking-widest">В обробці</h3>
+            </div>
+            <span class="bg-[#1a1a1a] text-yellow-400 text-xs font-bold px-3 py-1 rounded-full border border-gray-800">{{processing_orders.count}}</span>
+        </div>
+
+        <div class="flex-grow flex flex-col gap-4 p-4 w-full">
+    {% for order in processing_orders %}
+        <div class="w-full bg-[#2a2a2a] border border-gray-800 rounded-2xl p-6 shadow-xl hover:border-blue-500 transition-all duration-300">
+            
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded-md font-black">ID: {{ order.id }}</span>
+                    <span class="text-gray-500 text-xs font-medium">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+                <div class="px-3 py-1 bg-blue-900/20 border border-blue-800/50 rounded-full">
+                    <span class="text-blue-400 text-[10px] font-bold uppercase tracking-widest">Нова</span>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-xl font-extrabold text-white tracking-tight">{{ order.full_name }}</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="flex items-center gap-3 text-gray-400 bg-[#1e1e1e] p-3 rounded-xl border border-gray-800">
+                        <span class="text-lg">📞</span>
+                        <span class="text-sm font-semibold">{{ order.phone }}</span>
+                    </div>
+                    {% if order.city %}
+                    <div class="flex items-center gap-3 text-gray-400 bg-[#1e1e1e] p-3 rounded-xl border border-gray-800">
+                        <span class="text-lg">📍</span>
+                        <span class="text-sm font-semibold">{{ order.city }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-gray-800/50 flex justify-between items-center">
+                <p class="text-xs text-gray-500">Зв'язок: <span class="text-gray-300 font-bold">{{ order.get_communication_channel_display }}</span></p>
+                <a href ="{% url 'order_view' order.id %}" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-4 py-2 rounded-lg transition-colors font-bold">
+                    Переглянути деталі
+                </a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="flex flex-col items-center justify-center py-20 opacity-20">
+            <p class="text-gray-400 italic">Тут поки що порожньо...</p>
+        </div>
+    {% endfor %}
+</div>
+    </div>
+
+</div>
+{% endblock %}

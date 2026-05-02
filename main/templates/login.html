@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизація | AppLogistics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none; }
+        .error-message { color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; display: none; }
+    </style>
+</head>
+<body class="bg-gray-900 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/10">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold text-blue-400 tracking-tight mb-2">AppLogistics</h1>
+            <div class="h-1 w-12 bg-blue-500 mx-auto rounded-full"></div>
+        </div>
+
+        <div id="login-container">
+            <h2 class="text-xl font-bold text-gray-100 mb-6 text-center">Вхід у кабінет</h2>
+            
+            <div id="login-error-general" class="mb-4 p-3 bg-red-900/50 border border-red-500 text-red-200 text-sm rounded-lg hidden text-center font-medium">
+                Невірний логін або пароль!
+            </div>
+
+            <form id="auth-login-form" method="POST" class="space-y-5">
+                {% csrf_token %} <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-1">Ваш логін</label>
+                    <input type="text" name="username" id="login-user" required 
+                        class="w-full px-4 py-3 bg-gray-800 rounded-xl border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                        placeholder="Введіть логін">
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <label class="text-sm font-semibold text-gray-300">Пароль</label>
+                        <a href="#" class="text-xs text-blue-400">Забули?</a>
+                    </div>
+                    <input type="password" name="password" id="login-pass" required 
+                        class="w-full px-4 py-3 bg-gray-800 rounded-xl border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                        placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all active:scale-95">
+                    Увійти
+                </button>
+            </form>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+                <button onclick="showRegister()" class="text-blue-400 font-bold hover:underline">Створити новий профіль</button>
+            </div>
+        </div>
+
+        <div id="register-container" class="hidden">
+            <h2 class="text-xl font-bold text-gray-100 mb-6 text-center">Реєстрація</h2>
+            
+            <form id="auth-register-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-1">Придумайте логін</label>
+                    <input type="text" id="reg-user" required 
+                        class="w-full px-4 py-3 bg-gray-800 rounded-xl border border-gray-700 text-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                        placeholder="user_1">
+                    <p id="reg-error-exists" class="error-message">Цей логін вже зайнятий!</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-1">Електронна пошта (необов'язково)</label>
+                    <input type="email" id="reg-email" 
+                        class="w-full px-4 py-3 bg-gray-800 rounded-xl border border-gray-700 text-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                        placeholder="mail@example.com">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-1">Пароль</label>
+                    <input type="password" id="reg-pass" required 
+                        class="w-full px-4 py-3 bg-gray-800 rounded-xl border border-gray-700 text-white focus:ring-2 focus:ring-green-500 outline-none transition-all"
+                        placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all active:scale-95">
+                    Зареєструватися
+                </button>
+            </form>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+                <button onclick="showLogin()" class="text-blue-400 font-bold hover:underline">Повернутися до входу</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        
+    </script>
+</body>
+</html>

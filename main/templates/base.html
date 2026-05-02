@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AppLogistics{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#1e1e1e] text-gray-200">
+
+    <header class="bg-[#252525] border-b border-gray-800 p-4 mb-8">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <a href="{% url 'profile' %}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div class="w-10 h-10 rounded-full bg-blue-900/30 flex items-center justify-center text-blue-400 font-bold border border-blue-800">
+                    <span>{{ user.username|slice:":1"|upper }}</span>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-gray-100">{{ user.username }}</p>
+                    <p class="text-xs text-gray-500">Особистий профіль</p>
+                </div>
+            </a>
+            
+            <nav class="flex bg-[#1a1a1a] p-1 rounded-lg border border-gray-800">
+                <a href="{% url 'index' %}" class="px-6 py-1.5 text-sm rounded-md hover:bg-[#2d2d2d] transition-colors">Заявки</a>
+                <a href="{% url 'archive' %}" class="px-6 py-1.5 text-sm rounded-md hover:bg-[#2d2d2d] transition-colors">Архів</a>
+            </nav>
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="text-sm text-red-400 font-semibold hover:text-red-300 transition-colors">Вийти</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

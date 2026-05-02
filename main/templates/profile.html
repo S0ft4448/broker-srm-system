@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-8 border-b border-gray-800 pb-6 text-center md:text-left">
+        <h1 class="text-3xl font-extrabold text-gray-100 tracking-tight">Мій профіль</h1>
+    </div>
+
+    <div class="bg-[#252525] border border-gray-800 rounded-3xl p-8 shadow-2xl">
+        <div class="flex flex-col md:flex-row items-center gap-8 mb-10">
+            <div class="w-32 h-32 rounded-full bg-blue-900/20 flex items-center justify-center text-blue-400 text-4xl font-bold border-2 border-blue-800">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+            
+            <div class="text-center md:text-left flex-grow">
+                <h2 class="text-2xl font-bold text-white mb-1">
+                    {% if user.first_name %} {{ user.first_name }} {{ user.last_name }} {% else %} {{ user.username }} {% endif %}
+                </h2>
+                <p class="text-gray-400 mb-4">{{ user.email }}</p>
+                <a href="{% url 'edit_profile' %}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg active:scale-95">
+                    Редагувати профіль
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-800">
+            <div>
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2">Логін</label>
+                <p class="text-gray-200 bg-[#1a1a1a] p-3 rounded-lg border border-gray-800/50">{{ user.username }}</p>
+            </div>
+            <div>
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2">Телефон</label>
+                <p class="text-gray-200 bg-[#1a1a1a] p-3 rounded-lg border border-gray-800/50">
+                    {{ user.profile.phone|default:"Не вказано" }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
