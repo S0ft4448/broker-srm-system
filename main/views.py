@@ -91,6 +91,8 @@ def order_edit(request,pk):
         order.city = request.POST.get("city")
         order.comm_channel = request.POST.get("communication")
         order.address = request.POST.get("address")
+        order.amount = request.POST.get("amount")
+        order.context = request.POST.get("context")
         
         order.lat = request.POST.get("latitude")
         order.lng = request.POST.get("longitude")
@@ -136,6 +138,8 @@ def create_order(request):
         full_name = request.POST.get('client_name')
         phone = request.POST.get('phone')
         comm_channel = request.POST.get('communication')
+        amount=request.POST.get('amount', 0),
+        context=request.POST.get('context', ''),
         
         # Соцсети прилетают списком из динамических полей (name="socials")
         socials_list = request.POST.getlist('socials')
@@ -150,7 +154,7 @@ def create_order(request):
         lng = request.POST.get('longitude')
 
         if full_name and phone:
-            # 2. Создаем сам заказ
+
             order = Order.objects.create(
                 full_name=full_name,
                 phone=phone,
@@ -162,7 +166,9 @@ def create_order(request):
                 latitude=float(lat) if lat else None,
                 longitude=float(lng) if lng else None,
                 user=request.user, 
-                status="new"
+                status="new",
+                amount=amount,
+                context=context
             )
 
             # 3. Сохраняем фото (их может быть несколько)

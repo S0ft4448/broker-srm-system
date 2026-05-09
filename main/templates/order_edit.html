@@ -3,7 +3,7 @@
 {% block title %}Редагування замовлення #{{ order.pk }}{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto pb-12">
+<div class="max-w-5xl mx-auto pb-12">
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-2xl font-bold text-gray-100">Редагування замовлення <span class="text-blue-500">#{{ order.pk }}</span></h1>
         <a href="{% url 'order_view' order.pk %}" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2">
@@ -116,6 +116,18 @@
                         <input type="file" name="photo" accept="image/*"
                             class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-900/30 file:text-blue-400 hover:file:bg-blue-900/50 cursor-pointer">
                     </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="space-y-2">
+        <label class="text-xs font-bold text-gray-500 uppercase">Сума (USD)</label>
+        <input type="number" name="amount" value="{{ order.amount }}" step="0.01"
+               class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none">
+    </div>
+    <div class="space-y-2">
+        <label class="text-xs font-bold text-gray-500 uppercase">Контекст заявки</label>
+        <textarea name="context" rows="1" 
+                  class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none">{{ order.context }}</textarea>
+    </div>
+</div>
                 </div>
 
                 <div class="space-y-3">

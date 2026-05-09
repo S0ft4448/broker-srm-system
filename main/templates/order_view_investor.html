@@ -9,7 +9,7 @@
     .leaflet-container { background: #1a1a1a; border: none; }
 </style>
 
-<div class="max-w-5xl mx-auto py-8 px-4">
+<div class="max-w-6xl mx-auto py-8 px-4">
     <div class="mb-6">
         <a href="{% url 'index' %}" class="text-gray-500 hover:text-white transition-all flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,20 +78,32 @@
                 </div>
             </div>
 
-            <div class="bg-[#252525] border border-gray-800 rounded-3xl p-8 shadow-2xl grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <label class="text-[10px] font-black text-gray-600 uppercase tracking-widest block mb-2">Клієнт та зв'язок</label>
-                    <p class="text-2xl font-bold text-white">{{ order.phone }}</p>
-                    <p class="text-sm text-blue-400 mt-1 font-bold">{{ order.get_communication_channel_display }} ({{ order.full_name }})</p>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-gray-600 uppercase tracking-widest block mb-2">Адреса доставки</label>
-                    <p class="text-xl font-bold text-gray-200">{{ order.city|default:"—" }}, {{ order.address }}</p>
-                    <p class="text-sm text-gray-500 mt-1">{{ order.region|default:"Область не вказана" }}</p>
-                </div>
-            </div>
-        </div>
+        <div class="bg-[#1a1a1a] border border-gray-800 rounded-3xl p-8 mt-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Клієнт та зв'язок</label>
+                            <p class="text-xl font-bold text-white mt-2">{{ order.phone }}</p>
+                            <p class="text-blue-500 text-xs font-bold uppercase">({{ order.full_name }})</p>
+                        </div>
 
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Адреса доставки</label>
+                            <p class="text-xl font-bold text-white mt-2">{{ order.city }}, {{ order.address }}</p>
+                            <p class="text-gray-500 text-xs">{{ order.region }} область</p>
+                        </div>
+
+                        <div class="border-l border-gray-800 pl-8">
+                            <div class="mb-4">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Сума</label>
+                                <p class="text-2xl font-black text-green-500 mt-1">{{ order.amount }} <span class="text-sm">USD</span></p>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Контекст / Коментар</label>
+                                <p class="text-gray-300 text-sm mt-1 leading-relaxed">{{ order.context|default:"Не вказано" }}</p>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+        
         <div class="space-y-6">
             <div class="bg-[#252525] border border-gray-800 rounded-3xl p-6 shadow-2xl">
                 <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Галерея та доки</h2>
