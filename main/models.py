@@ -37,7 +37,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Статус")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата створення")
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Менеджер")
-    investor = models.ManyToManyField(User, blank=True,
+    investors = models.ManyToManyField(User, blank=True,
                                  related_name="assigned_orders",
                                  verbose_name="Призначеный инвестор",
                                  limit_choices_to={'groups__name':'Investors'}

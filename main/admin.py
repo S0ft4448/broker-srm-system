@@ -1,6 +1,20 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import Order, OrderPhoto, OrderDocument
+from django.contrib.auth.admin import UserAdmin 
+from django.contrib.auth.models import User
+
+class CustomUserAdmin(UserAdmin):
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (None,{
+            'classes':('wide',),
+            'fields': ('first_name', 'last_name', 'email')
+        }),
+    )
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
+
 
 class OrderPhotoInline(admin.TabularInline):
     model = OrderPhoto

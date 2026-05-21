@@ -121,3 +121,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = 'login'
+
+AUTH_PASSWORD_VALIDATORS = []

@@ -4,16 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Order, OrderPhoto, OrderDocument
 from django.contrib.auth.models import User, Group
-
+from django.core.exceptions import PermissionDenied
 @login_required
 def index(request):
     user = request.user
 
     if user.groups.filter(name='Investors').exists():
-        orders = Order.objects.filter(investor=user).order_by('-created_at')
+        orders = Order.objects.filter(investors=user).order_by('-created_at')
         return redirect('order_list')
     elif user.groups.filter(name="Broker").exists():
-        orders = Order.objects.filter(investor=user).order_by('-created_at')
+        orders = Order.objects.filter(user=user).order_by('-created_at')
         return redirect('broker_menu')
 
     if request.method == 'POST':
@@ -77,12 +77,24 @@ def order_view(request,pk):
     user = request.user
 
     if user.groups.filter(name='Investors').exists():
-        return render(request, 'order_view_investor.html', {'order':order})
+        if user not in order.investors.all():
+            raise PermissionDenied("Вы нет имеете доступ к этому заказу")
+        return render(request, 'order_view_investor.html', {'order': order})
+    if user.groups.filter(name='Broker').exists():
+        if user!=order.user:
+            raise PermissionDenied("Вы нет доступа к этому заказу")
     return render(request, 'order_view.html', {'order':order})
 
+
+@login_required
 def order_edit(request,pk):
     order = get_object_or_404(Order, pk=pk)
+    user = request.user
  
+    if user.groups.filter(name='Investors').exists():
+        order = Order.objects.filter(investors=user).order_by('-created_at')
+        return redirect('order_list')
+
     if request.method == "POST": 
         order.full_name = request.POST.get("client_name")
         order.status = request.POST.get("status")
@@ -104,7 +116,9 @@ def order_edit(request,pk):
         order.save()
 
         investor_ids = request.POST.getlist('investors')
-        order.investor.set(investor_ids)
+            
+        if investor_ids:
+            order.investor.set(investor_ids)
 
         return redirect('order_view', pk=order.pk)
 
@@ -196,7 +210,12 @@ def archive(request):
     })
 
 def profile_view(request):
-    # Поки що просто відображаємо сторінку з даними поточного користувача
+    user = request.user
+
+    if user.groups.filter(name="Investors").exists():
+        return render(request, 'profile_investor.html', {
+        'user': request.user
+        })
     return render(request, 'profile.html', {
         'user': request.user
     })
@@ -218,8 +237,7 @@ def edit_profile(request):
         
     return render(request, 'edit_profile.html')
 
-def profile_view(request):
-    return render(request, 'profile.html')
+
 
 def edit_profile(request):
     if request.method == 'POST':
@@ -241,10 +259,11 @@ def order_detail(request, pk):
 
 @login_required
 def order_list(request):
+    
     user = request.user
 
     if user.groups.filter(name="Investors").exists():
-        orders = Order.objects.filter(investor=user).order_by('-created_at')
+        orders = Order.objects.filter(investors=user).order_by('-created_at')
     elif user.is_staff:
         return redirect('index')
     else:
